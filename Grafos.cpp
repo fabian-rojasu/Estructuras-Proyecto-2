@@ -39,6 +39,7 @@ struct Personas{
     string cedula;//Indentificador
     struct Vertice * inicio;//Este sera el punto de partida de la persona respectiva 
     string formaAvanzar; //Aqui se determinara la forma en la que la persona respectiva se transaladara por los diferentes lugares
+    struct Amigos* amigos;
     Personas * ant;
     Personas * sig;
     //Constructor
@@ -49,9 +50,20 @@ struct Personas{
         formaAvanzar=FAva;
         ant = NULL;
         sig = NULL;
+        amigos=NULL;  
     }
 
 } * nodoPersona;
+
+struct Amigos{
+    string amigo;
+    Amigos * sig;
+    Amigos(string ami){
+        amigo=ami;
+        sig=NULL;
+    }
+};
+
 
 //Metodos Vertice
 
