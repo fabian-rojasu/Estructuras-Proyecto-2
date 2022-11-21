@@ -42,7 +42,7 @@ struct Arco{
 
 
 
-
+// estructura que almacena los datos de un amigo y asi crear una lista de amigos adentrode una persona
 struct Amigos
 {
     string nombre;
@@ -85,7 +85,7 @@ struct Personas{
         duracion = 0;
     }
 
-} * nodoPersona;
+} * nodoPersona;/// lista de personas
 
 
 
@@ -95,7 +95,7 @@ struct Personas{
 struct Vertice *grafo1;// el apuntador inicial del grafo
 struct Vertice *grafo2;// el apuntador inicial del grafo
 
-
+///inserta un vertice en la lista de vertices que forman un grafo
 struct Vertice * insertarVertice(string nom,Vertice *grafo){
     struct Vertice *nuevoVertice = new Vertice(nom);
 
@@ -104,7 +104,8 @@ struct Vertice * insertarVertice(string nom,Vertice *grafo){
     return grafo; 
 }
 
-
+// busca un vertice especifico en alguno de los grafos
+//retorna el vertice si lo encuentra si no null.
 struct Vertice *   buscarVertice(string origen,Vertice*graf){
     struct Vertice *tempV = graf;
     while(tempV != NULL){
@@ -115,7 +116,7 @@ struct Vertice *   buscarVertice(string origen,Vertice*graf){
     }
 return NULL;//no lo encontro
 }
-
+//metodo que modifica los datos de un vertice
 void modificarVertice(Vertice*graf){
     string nom;
     printf("Nombre del vertice:  ");
@@ -165,7 +166,7 @@ void borrarVertice(string nom,Vertice*graf){
 
 
 //Metodos Arco
-
+//metodo que inserta un arco para 2 vertices de un grafico en especifico//
 void insertarArco(string origen, int dis, string des,Vertice*graf){
 
         struct Vertice *vOrigen = buscarVertice(origen,graf);
@@ -289,7 +290,7 @@ void borrarPersona(string ced){
             }
         }
 }
-
+///funcion para cargar datos quemados y asi poder crear los grafos
 void cargarDatos(){
     //GRAFO1
     grafo1 = insertarVertice("Sabanilla",grafo1);
@@ -394,7 +395,8 @@ void cargarDatos(){
     } 
 }*/
 int tiempo =0;
-
+//metodo  para avanzar de la manera 1
+//@param persona que avanza de esta forma
 void avanzar1(Personas * per){
     Arco * arcoContador = per->inicio->subListaArcos;
     Arco * arco = per->inicio->subListaArcos;
@@ -430,7 +432,8 @@ void avanzar1(Personas * per){
     per->estado = "Caminando";
 }
 
-
+// metodo para avanzar de la forma 2 
+//@param persona que avanza de esta forma
 void avanzar2(Personas * per){
     Vertice * ver = per->inicio;
     string nombre;
@@ -473,7 +476,8 @@ void avanzar2(Personas * per){
     }
     per->estado = "Caminando";
 }
-
+/// metodo para avanzar de la forma 3
+//@param persona que avanza
 void avanzar3(Personas * per){
     Vertice * ver = per->inicio;
     string nombre;
@@ -518,7 +522,8 @@ void avanzar3(Personas * per){
     }
     per->estado = "Caminando";
 }
-
+//metodo para avanzar de la forma numero 4
+//@param persona que avanza y destino donde desea llegar
 void avanzar4(Personas * per, string destino){
     if (per->inicio->nombre == destino) {
         per->duracion= 0;
@@ -528,17 +533,17 @@ void avanzar4(Personas * per, string destino){
 }
 
 
-
+/////metodo para avanzar un tiempo cada persona de la lista de personas
 void moverPersona(Personas* per){
     Personas * temp = per;
     string a;
 
-    if(temp->formaAvanzar=="1"){
+    if(temp->formaAvanzar=="1"){// si la forma de avanzar es la primera
         avanzar1(temp);
         if(temp->sig!=NULL)
             moverPersona(temp->sig);
     }
-    if(temp->formaAvanzar=="2"){        
+    if(temp->formaAvanzar=="2"){// si la forma de avanzar es la segunda     
         avanzar2(temp);
         if(temp->sig!=NULL)
             moverPersona(temp->sig);
@@ -548,14 +553,16 @@ void moverPersona(Personas* per){
 }
 
 ////////////////////////// Metodos Amigos//////////////////////////////
+///metodo para agregar a las lista de amigos de la personas
+//@param las 2 personas que se van hacer amigas
 void agregarAmigos(Personas* persona1,Personas* persona2){
     Amigos* listAmigos1 = persona1->listaAmigos;
     Amigos* listAmigos2 = persona2->listaAmigos;
     Amigos* nuevoAmigoInicial = NULL;
-    if(listAmigos1 == NULL){
+    if(listAmigos1 == NULL){ // compara si tiene 0 amigos
         persona1->listaAmigos = new Amigos(persona2->nombre,persona2->cedula);
     }else{
-        while (listAmigos1 != NULL){
+        while (listAmigos1 != NULL){ //recorre la lista en busca de que no se repita el amigo
             if(listAmigos1->cedula == persona2->cedula){
                 return;
             }
@@ -567,10 +574,10 @@ void agregarAmigos(Personas* persona1,Personas* persona2){
         nuevoAmigoInicial->sig = persona1->listaAmigos;
         persona1->listaAmigos = nuevoAmigoInicial;
     }
-    if (listAmigos2 == NULL){
+    if (listAmigos2 == NULL){// compara si tiene 0 amigos
         persona2->listaAmigos = new Amigos(persona1->nombre,persona1->cedula);
     }else{
-        while (listAmigos2 != NULL){
+        while (listAmigos2 != NULL){//recorre la lista en busca de que no se repita el amigo
             if(listAmigos2->cedula == persona1->cedula){
                 return;
             }
@@ -586,6 +593,7 @@ void agregarAmigos(Personas* persona1,Personas* persona2){
 }
 
 //Consulta 2//
+//recorre la lista de persoans en busca de la que mas amigos tenga, imprime el nombre y la cantidad de amigos
 void personaPopu(){
     if(nodoPersona == NULL){
         cout<<"\n Lista de personas vacia....\n";
@@ -596,16 +604,16 @@ void personaPopu(){
         int amigos = 0;
         int size=0;
         string nombre;
-        while (temp != NULL)
+        while (temp != NULL) //recorre la lista de persoans
         {
             Amigos* listAmigos = temp->listaAmigos;
             
-            while (listAmigos != NULL)
+            while (listAmigos != NULL)// recorre la lista de amigos
             {   
                 size++;
                 listAmigos = listAmigos->sig;
             }
-            if(size>amigos){
+            if(size>amigos){ // compara quien tiene mas amigos 
                 amigos=size;
                 nombre = temp->nombre;
             }
@@ -615,7 +623,7 @@ void personaPopu(){
         
     }
 }
-/// @brief reporte# 9
+/// @brief reporte# 9 busca la cantidad y el nombre de cada amigo que tenga una persona X
 /// @param ced cedula de la persona a buscar
 void buscarAmigos(string ced){
     Personas* buscado = buscarPersona(ced);
@@ -625,17 +633,17 @@ void buscarAmigos(string ced){
         }else{
             int size=0;
             Amigos* listAmigos = buscado->listaAmigos;
-            while (listAmigos != NULL)
+            while (listAmigos != NULL) //recorre la lista de amigos de la persoa
             {   
                 size++;
-                cout<<"\n Amigos de "<<buscado->nombre<<":\n"<< listAmigos->nombre;
+                cout<<"\n Amigos de "<<buscado->nombre<<":\n"<< listAmigos->nombre;// imprime el nombre de todos los amigos
                 listAmigos = listAmigos->sig;
             }
-            cout<<"\n"<<buscado->nombre<<" tiene "<<size<<" amigos.";
+            cout<<"\n"<<buscado->nombre<<" tiene "<<size<<" amigos.";// imprime la cantidad de amigos
         }
 }
 
-/// @brief REPORTE#10
+/// @brief REPORTE#10, metodo que recorre la lista de personas y busca quien no tiene amigos
 void personaAsocial(){
 if(nodoPersona == NULL){
         cout<<"\n Lista de personas vacia....\n";
@@ -646,7 +654,7 @@ if(nodoPersona == NULL){
         while (temp != NULL)//recorre lista personas
         {
             if (temp->listaAmigos==NULL){
-                cout<<"\n Personas sin amigos: \n" << temp->nombre << temp->cedula;
+                cout<<"\n Personas sin amigos: \n" << temp->nombre << temp->cedula; //imprime la persona que tenga la lista de amigos en NULL
             }
         }
         
@@ -660,7 +668,7 @@ void imprimir(){
         cout<<"\n Lista vacia........\n";
     }else{
         Personas*temp = nodoPersona;
-        while(temp!= NULL){
+        while(temp!= NULL){//recorre la lista de personas
             cout<<"\n Nombre: "<<temp->nombre<<",   "<<"\nCedula: "<<temp->cedula<<",   "<<"\n Inicio: "<<temp->inicio->nombre<<",   "<<"\n Forma avanzar: "<<temp->formaAvanzar<<",   ";
             temp = temp->sig;
         }
@@ -668,7 +676,7 @@ void imprimir(){
     
     
 }
-
+//METODO que recorre el grafo pero especificando los caminos de cada vertice///
 void amplitud(Vertice*graf){
     struct Vertice *tempV = graf;
 
@@ -683,7 +691,7 @@ void amplitud(Vertice*graf){
         tempV = tempV->sigV;
     }
 }
-
+///Metodo que recorre todo el grafo desde un punto de inicio//
 void profundidad (struct Vertice *inicio, Vertice * graf){
     if((inicio == NULL) or (inicio->visitado== true)){
             cout<<endl;
@@ -704,7 +712,7 @@ void profundidad (struct Vertice *inicio, Vertice * graf){
 }
 
 
-
+///menu para imprimir distintos reportes de la informacion adentro de als estructuras///
 void menuReportes(){
     cout<<"*****Sistema de Reportes*****";
     cout << "1) Amplitud del grafo " << endl;
@@ -782,7 +790,7 @@ void menuReportes(){
         break;
     }
 }
-
+/// menu para mantenimientos de las instancias de la estructuras///
 void menuMantenimientos(){
     cout<<"\t*****Sistema de mantenimiento*****";
     cout<<"*****Vertices*****";
@@ -913,7 +921,7 @@ void menuMantenimientos(){
         break;
     }
 }   
-
+///Menú principal///
 void menu(){
     cout << endl <<"*****Sistema de caminatas*****"<< endl;
     cout <<"1) Iniciar Caminata " << endl;
