@@ -29,11 +29,13 @@ struct Vertice{
 //Esta estructura sera la que se utilice para representar la conexion que que habra entre los diferentes lugares
 struct Arco{
     //Atributos de la estructura
+    int id;
     int distancia;//Medida que tendran que recorrer de un vertice a otro
     string destino;
     struct Arco *sigA;//siguiente arco.
     //Constructor
-    Arco(int dis, string des){
+    Arco(int i ,int dis, string des){
+            id = i;
             distancia = dis;
             destino = des;
             sigA = NULL;
@@ -95,6 +97,8 @@ struct Personas{
 struct Vertice *grafo1;// el apuntador inicial del grafo
 struct Vertice *grafo2;// el apuntador inicial del grafo
 
+struct Arco * arco1;
+struct Arco * arco2;
 
 struct Vertice * insertarVertice(string nom,Vertice *grafo){
     struct Vertice *nuevoVertice = new Vertice(nom);
@@ -166,25 +170,101 @@ void borrarVertice(string nom,Vertice*graf){
 
 //Metodos Arco
 
-void insertarArco(string origen, int dis, string des,Vertice*graf){
+struct Arco* insertarArco(int id,string origen, int dis, string des,Vertice*graf,Arco*arco){
 
-        struct Vertice *vOrigen = buscarVertice(origen,graf);
-        struct Vertice *vDestino = buscarVertice(des,graf);
+    struct Vertice *vOrigen = buscarVertice(origen,graf);
+    struct Vertice *vDestino = buscarVertice(des,graf);
 
-        if(vOrigen == NULL){
-            cout<<"\nNo se encuentra el origen.";
-            return;
+    if(vOrigen == NULL){
+        cout<<"\nNo se encuentra el origen.";
+        return arco;
+    }
+    if(vDestino == NULL){
+        cout<<"\nNo se encuentra el destino.";
+        return arco;
+    }
+    struct Arco *nuevoArco = new Arco(id,dis,des);
+
+    nuevoArco->sigA = vOrigen->subListaArcos;
+    vOrigen->subListaArcos = nuevoArco;
+    if(arco==NULL){
+        arco=nuevoArco;
+        
+        
+        return arco;
+    }else{
+        Arco * temp =arco;
+        while (temp->sigA!=NULL)
+        {
+            temp=temp->sigA;
+        } 
+        temp->sigA=nuevoArco;
+        return temp;          
+    }
+
+    
+    //se inserto al inicio de la sublista de Arcos
+    
+
+}
+
+struct Arco *   buscarArco(int id,Arco*arc){
+    struct Arco *tempA = arc;
+    while(tempA != NULL){
+        if(tempA->id == id)
+            return tempA;
+
+        tempA = tempA->sigA;
+    }
+    return NULL;//no lo encontro
+}
+
+void modificarArco(Arco*arc){
+    int id;
+    int dis;
+    printf("id del arco:  ");
+    cin>> id;
+    struct Arco *tempA = buscarArco(id,arc);
+    if (tempA == NULL){
+        printf("Arco no encontrado");
+    }else{
+        printf("\n\nDistancia nueva:  ");
+        cin>> dis; 
+        tempA->distancia = dis;
+    }
+}
+
+//Metodo Borrar: selecciona al nodo que se desea eliminar por medio de su respectivo buscar
+void borrarArco(int id,Arco*arc){
+    Arco* buscado = buscarArco(id,arc);
+    if(buscado == NULL){
+        cout<<"\n vertice no encontrada....\n";
+        return;
+    }
+    else{
+        if(buscado == arc){//si el buscado es el primero
+                arc = arc->sigA;
         }
-        if(vDestino == NULL){
-            cout<<"\nNo se encuentra el destino.";
-            return;
+        else{//borra en medio o al final
+            Arco * temp =arc->sigA; /*1    2   3*/
+            Arco * ant =arc;
+            while ((temp!= NULL) && (temp!=buscado))
+            {
+                ant = temp;
+                temp = temp->sigA;
+            }
+            if(temp==buscado){
+                if (temp->sigA==NULL)
+                {
+                    ant->sigA=NULL;
+                }else{
+                    ant->sigA=temp->sigA;  
+
+                }
+            }
+            
         }
-        struct Arco *nuevoArco = new Arco(dis,des);
-
-        //se inserto al inicio de la sublista de Arcos
-        nuevoArco->sigA = vOrigen->subListaArcos;
-        vOrigen->subListaArcos = nuevoArco;
-
+    }
 }
 
 //Metodos Persona
@@ -298,16 +378,16 @@ void cargarDatos(){
     grafo1 = insertarVertice("Tibas",grafo1);
     grafo1 = insertarVertice("Escalante",grafo1);
 
-    insertarArco("Sabanilla",rand()%21,"San Pedro",grafo1);
-    insertarArco("Sabanilla",rand()%21,"Curri",grafo1);
-    insertarArco("Sabanilla",rand()%21,"Tibas",grafo1);
-    insertarArco("San Pedro",rand()%21,"Curri",grafo1);
-    insertarArco("San Pedro",rand()%21,"Escalante",grafo1);
-    insertarArco("Curri",rand()%21,"Curri",grafo1);
-    insertarArco("Tibas",rand()%21,"Escalante",grafo1);
-    insertarArco("Tibas",rand()%21,"San Pedro",grafo1);
-    insertarArco("Escalante",rand()%21,"Sabanilla",grafo1);
-    insertarArco("Escalante",rand()%21,"San Pedro",grafo1);
+    buscarVertice("Sabanilla",grafo1)->subListaArcos =insertarArco(1,"Sabanilla",rand()%21,"San Pedro",grafo1,arco1);
+    buscarVertice("Sabanilla",grafo1)->subListaArcos=insertarArco(2,"Sabanilla",rand()%21,"Curri",grafo1,arco1);
+    buscarVertice("Sabanilla",grafo1)->subListaArcos=insertarArco(3,"Sabanilla",rand()%21,"Tibas",grafo1,arco1);
+    buscarVertice("San Pedro",grafo1)->subListaArcos=insertarArco(4,"San Pedro",rand()%21,"Curri",grafo1,arco1);
+    buscarVertice("San Pedro",grafo1)->subListaArcos=insertarArco(5,"San Pedro",rand()%21,"Escalante",grafo1,arco1);
+    buscarVertice("Curri",grafo1)->subListaArcos=insertarArco(6,"Curri",rand()%21,"Curri",grafo1,arco1);
+    buscarVertice("Tibas",grafo1)->subListaArcos=insertarArco(7,"Tibas",rand()%21,"Escalante",grafo1,arco1);
+    buscarVertice("Tibas",grafo1)->subListaArcos=insertarArco(8,"Tibas",rand()%21,"San Pedro",grafo1,arco1);
+    buscarVertice("Escalante",grafo1)->subListaArcos=insertarArco(9,"Escalante",rand()%21,"Sabanilla",grafo1,arco1);
+    buscarVertice("Escalante",grafo1)->subListaArcos=insertarArco(10,"Escalante",rand()%21,"San Pedro",grafo1,arco1);
     
 
     
@@ -321,42 +401,54 @@ void cargarDatos(){
     grafo2 =insertarVertice("San Vicente",grafo2);
     grafo2 =insertarVertice("Cedral",grafo2);
 
-    insertarArco("Lourdes",rand()%21,"Gamonales",grafo2);
-    insertarArco("Lourdes",rand()%21,"San Antonio",grafo2);
-    insertarArco("Lourdes",rand()%21,"San Vicente",grafo2);
-    insertarArco("Campo",rand()%21,"Lourdes",grafo2);
-    insertarArco("Campo",rand()%21,"Campo",grafo2);
-    insertarArco("Campo",rand()%21,"Gamonales",grafo2);
-    insertarArco("Gamonales",rand()%21,"San Antonio",grafo2);
-    insertarArco("Gamonales",rand()%21,"Cedral",grafo2);
-    insertarArco("Gamonales",rand()%21,"San Roque",grafo2);
-    insertarArco("San Roque",rand()%21,"San Roque",grafo2);
-    insertarArco("San Roque",rand()%21,"Campo",grafo2);
-    insertarArco("San Roque",rand()%21,"San Antonio",grafo2);
-    insertarArco("San Roque",rand()%21,"Cedral",grafo2);
-    insertarArco("San Roque",rand()%21,"Cedral",grafo2);
-    insertarArco("San Antonio",rand()%21,"Campo",grafo2);
-    insertarArco("San Antonio",rand()%21,"San Roque",grafo2);
-    insertarArco("San Antonio",rand()%21,"Cedral",grafo2);
-    insertarArco("Cedral",rand()%21,"Campo",grafo2);
-    insertarArco("Cedral",rand()%21,"Lourdes",grafo2);
-    insertarArco("San Vicente",rand()%21,"San Vicente",grafo2);
-    insertarArco("San Vicente",rand()%21,"Lourdes",grafo2);
-    insertarArco("San Vicente",rand()%21,"Campo",grafo2);
-    insertarArco("San Vicente",rand()%21,"San Antonio",grafo2);
-    insertarArco("San Vicente",rand()%21,"Cedral",grafo2);
+    buscarVertice("Lourdes",grafo2)->subListaArcos=insertarArco(1,"Lourdes",rand()%21,"Gamonales",grafo2,arco2);
+    buscarVertice("Lourdes",grafo2)->subListaArcos=insertarArco(2,"Lourdes",rand()%21,"San Antonio",grafo2,arco2);
+    buscarVertice("Lourdes",grafo2)->subListaArcos=insertarArco(3,"Lourdes",rand()%21,"San Vicente",grafo2,arco2);
+    buscarVertice("Campo",grafo2)->subListaArcos=insertarArco(4,"Campo",rand()%21,"Lourdes",grafo2,arco2);
+    buscarVertice("Campo",grafo2)->subListaArcos=insertarArco(5,"Campo",rand()%21,"Campo",grafo2,arco2);
+    buscarVertice("Campo",grafo2)->subListaArcos=insertarArco(6,"Campo",rand()%21,"Gamonales",grafo2,arco2);
+    buscarVertice("Gamonales",grafo2)->subListaArcos=insertarArco(7,"Gamonales",rand()%21,"San Antonio",grafo2,arco2);
+    buscarVertice("Gamonales",grafo2)->subListaArcos=insertarArco(8,"Gamonales",rand()%21,"Cedral",grafo2,arco2);
+    buscarVertice("Gamonales",grafo2)->subListaArcos=insertarArco(9,"Gamonales",rand()%21,"San Roque",grafo2,arco2);
+    buscarVertice("San Roque",grafo2)->subListaArcos=insertarArco(10,"San Roque",rand()%21,"San Roque",grafo2,arco2);
+    buscarVertice("San Roque",grafo2)->subListaArcos=insertarArco(11,"San Roque",rand()%21,"Campo",grafo2,arco2);
+    buscarVertice("San Roque",grafo2)->subListaArcos=insertarArco(12,"San Roque",rand()%21,"San Antonio",grafo2,arco2);
+    buscarVertice("San Roque",grafo2)->subListaArcos=insertarArco(13,"San Roque",rand()%21,"Cedral",grafo2,arco2);
+    buscarVertice("San Roque",grafo2)->subListaArcos=insertarArco(14,"San Roque",rand()%21,"Cedral",grafo2,arco2);
+    buscarVertice("San Antonio",grafo2)->subListaArcos=insertarArco(15,"San Antonio",rand()%21,"Campo",grafo2,arco2);
+    buscarVertice("San Antonio",grafo2)->subListaArcos=insertarArco(16,"San Antonio",rand()%21,"San Roque",grafo2,arco2);
+    buscarVertice("San Antonio",grafo2)->subListaArcos=insertarArco(17,"San Antonio",rand()%21,"Cedral",grafo2,arco2);
+    buscarVertice("Cedral",grafo2)->subListaArcos=insertarArco(18,"Cedral",rand()%21,"Cedral",grafo2,arco2);
+    buscarVertice("Cedral",grafo2)->subListaArcos=insertarArco(19,"Cedral",rand()%21,"Lourdes",grafo2,arco2);
+    buscarVertice("Cedral",grafo2)->subListaArcos=insertarArco(20,"Cedral",rand()%21,"San Vicente",grafo2,arco2);
+    buscarVertice("San Vicente",grafo2)->subListaArcos=insertarArco(21,"San Vicente",rand()%21,"San Vicente",grafo2,arco2);
+    buscarVertice("San Vicente",grafo2)->subListaArcos=insertarArco(22,"San Vicente",rand()%21,"Lourdes",grafo2,arco2);
+    buscarVertice("San Vicente",grafo2)->subListaArcos=insertarArco(23,"San Vicente",rand()%21,"Campo",grafo2,arco2);
+    buscarVertice("San Vicente",grafo2)->subListaArcos=insertarArco(24,"San Vicente",rand()%21,"San Antonio",grafo2,arco2);
+    buscarVertice("San Vicente",grafo2)->subListaArcos=insertarArco(25,"San Vicente",rand()%21,"Cedral",grafo2,arco2);
 
     //Personas
+    nodoPersona = insertarPersona("Geanca","208340764",buscarVertice("Sabanilla",grafo1),"1",nodoPersona);
+    nodoPersona = insertarPersona("a","208340760",buscarVertice("Curri",grafo1),"4",nodoPersona);
+    nodoPersona = insertarPersona("b","208340761",buscarVertice("Sabanilla",grafo1),"2",nodoPersona);
+    nodoPersona = insertarPersona("c","208340762",buscarVertice("Sabanilla",grafo1),"1",nodoPersona);
+    nodoPersona = insertarPersona("d","208340763",buscarVertice("Tibas",grafo1),"1",nodoPersona);
+    nodoPersona = insertarPersona("f","208340765",buscarVertice("Tibas",grafo1),"4",nodoPersona);
+    nodoPersona = insertarPersona("g","208340766",buscarVertice("Escalante",grafo1),"2",nodoPersona);
+    nodoPersona = insertarPersona("h","208340767",buscarVertice("Sabanilla",grafo1),"2",nodoPersona);
+    nodoPersona = insertarPersona("i","208340768",buscarVertice("Curri",grafo1),"1",nodoPersona);
+    nodoPersona = insertarPersona("j","208340769",buscarVertice("Escalante",grafo1),"1",nodoPersona);
+
     nodoPersona = insertarPersona("Geanca","208340764",buscarVertice("Campo",grafo2),"1",nodoPersona);
-    nodoPersona = insertarPersona("a","208340760",buscarVertice("Campo",grafo2),"3",nodoPersona);
+    nodoPersona = insertarPersona("a","208340760",buscarVertice("Campo",grafo2),"4",nodoPersona);
     nodoPersona = insertarPersona("b","208340761",buscarVertice("Cedral",grafo2),"2",nodoPersona);
-    /*nodoPersona = insertarPersona("c","208340762",buscarVertice("Campo",grafo2),"1",nodoPersona);
+    nodoPersona = insertarPersona("c","208340762",buscarVertice("Campo",grafo2),"1",nodoPersona);
     nodoPersona = insertarPersona("d","208340763",buscarVertice("Cedral",grafo2),"1",nodoPersona);
-    nodoPersona = insertarPersona("f","208340765",buscarVertice("Gamonales",grafo2),"1",nodoPersona);
-    nodoPersona = insertarPersona("g","208340766",buscarVertice("San Vicente",grafo2),"1",nodoPersona);
-    nodoPersona = insertarPersona("h","208340767",buscarVertice("San Roque",grafo2),"1",nodoPersona);
+    nodoPersona = insertarPersona("f","208340765",buscarVertice("Gamonales",grafo2),"4",nodoPersona);
+    nodoPersona = insertarPersona("g","208340766",buscarVertice("San Vicente",grafo2),"2",nodoPersona);
+    nodoPersona = insertarPersona("h","208340767",buscarVertice("San Roque",grafo2),"2",nodoPersona);
     nodoPersona = insertarPersona("i","208340768",buscarVertice("Campo",grafo2),"1",nodoPersona);
-    nodoPersona = insertarPersona("j","208340769",buscarVertice("San Vicente",grafo2),"1",nodoPersona);*/
+    nodoPersona = insertarPersona("j","208340769",buscarVertice("San Vicente",grafo2),"1",nodoPersona);
 
 
 }
@@ -429,7 +521,6 @@ void avanzar1(Personas * per){
     }
     per->estado = "Caminando";
 }
-
 
 void avanzar2(Personas * per){
     Vertice * ver = per->inicio;
@@ -519,12 +610,47 @@ void avanzar3(Personas * per){
     per->estado = "Caminando";
 }
 
-void avanzar4(Personas * per, string destino){
-    if (per->inicio->nombre == destino) {
-        per->duracion= 0;
-        per->estado = "Saliendo";
+
+bool rutaCorta(struct Vertice *origen, string destino, string ruta, int dis){
+    if((origen == NULL) or (origen->visitado== true))
+        return origen->existeRuta;
+
+        if(origen->nombre == destino){
+                if((origen->distanciaMenor==0) || (dis < origen-> distanciaMenor)){
+                        origen->distanciaMenor =dis;
+                        origen->rutaMenor = ruta+destino;
+                }
+                origen->existeRuta= true;
+                 return origen->existeRuta;
+        }
+        origen->visitado =true;
+
+    struct Arco *tempA =origen->subListaArcos;
+    while(tempA != NULL){
+        if (buscarVertice(origen->nombre,grafo1) != NULL)
+        {
+            rutaCorta(buscarVertice(tempA->destino,grafo1), destino, ruta+origen->nombre, dis + tempA->distancia);
+        }
+        if (buscarVertice(origen->nombre,grafo2) != NULL)
+        {
+            rutaCorta(buscarVertice(tempA->destino,grafo2), destino, ruta+origen->nombre, dis + tempA->distancia);
+        }
+        
+        
+        tempA = tempA->sigA;
     }
-    
+    origen->visitado =false;
+    return origen->existeRuta;
+}
+
+
+void avanzar4(Personas * per, string destino){
+    rutaCorta(per->inicio,"Cedral","",per->duracion);
+    if(per->inicio->existeRuta == true){
+                    cout<<"\n\nLa ruta m�s corta es: "<<per->inicio->rutaMenor
+                    << "con una distancia de: "<<per->inicio->distanciaMenor;
+        }
+        else cout<<"\n\nNo existe ruta.................";
 }
 
 
@@ -801,6 +927,7 @@ void menuMantenimientos(){
     cin>> opt;
     string nom;
     int dis;
+    int id;
     string ced;
     string des;
     string form;
@@ -861,12 +988,16 @@ void menuMantenimientos(){
         cout << "Digite la distancia:" << endl;
 
         cin>> dis;
+
+        cout << "Digite el ID:" << endl;
+
+        cin>> id;
         if (opt == 1){
-            insertarArco(nom,dis,des,grafo1);
+            insertarArco(id,nom,dis,des,grafo1,arco1);
             menuMantenimientos();
         }
         if (opt == 2){
-            insertarArco(nom,dis,des,grafo2);
+            insertarArco(id,nom,dis,des,grafo2,arco2);
             menuMantenimientos();
         }
         break;
@@ -945,6 +1076,8 @@ void menu(){
 int main(){
     cargarDatos();
     menu();
+
+    
 
 }
 
